@@ -43,12 +43,15 @@ class AuthService:
         response.raise_for_status()
         return response.json()
 
-async def main() -> None:
+    @property
+    def client(self):
+        return self._client
+
+
+async def get_post_response() -> dict[str, str | int]:
     user_data: Dict[str, str] = get_user_config()
     headers: Dict[str, str] = get_post_headers()
 
     async with AuthService() as auth_service:
         result_post = await auth_service.authorization(user_data, headers)
-        print(result_post)
-
-asyncio.run(main())
+        return result_post
