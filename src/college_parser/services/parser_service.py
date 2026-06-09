@@ -4,7 +4,6 @@ import asyncio
 import httpx
 
 from src.college_parser.headers.headers_get import get_headers_request
-from src.college_parser.services.auth_services import AuthService
 from src.college_parser.configs.user_config import config_user
 
 class Parsing:
@@ -14,16 +13,17 @@ class Parsing:
             headers: Dict[str, str]
     ) -> List[Dict[str, str | int]]:
 
-        async with AuthService() as auth_client:
-            response = await auth_client.authorization.get(url, headers=headers)
+        async with httpx.AsyncClient() as auth_client:
+            response = await auth_client.get(url, headers=headers)
             response.raise_for_status()
             return response.json()
 
-async def get_parsing_data():
-    parsing = Parsing()
+async def get_parsing_data() -> List[Dict[str, str | int]]:
+    parsing: Parsing = Parsing()
     headers: dict[str, str] = await asyncio.create_task(get_headers_request())
-    result = await asyncio.create_task(parsing.parsing_schedule(str(config_user.BASE_URL), headers))
-    print(result)
+    result = await parsing.parsing_schedule(str(config_user.BASE_URL), headers)
+    return result
 
-asyncio.run(get_parsing_data())
+if __name__ == "__main__":
+    asyncio.run(get_parsing_data())
 
