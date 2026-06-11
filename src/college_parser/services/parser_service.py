@@ -24,6 +24,3 @@ async def get_parsing_data() -> List[Dict[str, str | int]]:
     result = await parsing.parsing_schedule(str(config_user.BASE_URL), headers)
     return result
 
-if __name__ == "__main__":
-    asyncio.run(get_parsing_data())
-

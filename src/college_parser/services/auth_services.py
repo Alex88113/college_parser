@@ -51,9 +51,15 @@ class AuthService:
             headers: Dict[str, str],
     ) -> Dict[str, str | int]:
         client = await self._get_connection()
-        response = await client.post(self.auth_url, json=user_data, headers=headers)
-        response.raise_for_status()
-        return response.json()
+        try:
+            response = await client.post(self.auth_url, json=user_data, headers=headers)
+            response.raise_for_status()
+            return response.json()
+        except httpx.ConnectTimeout as error:
+            raise httpx.ConnectTimeout(f"Не удалось подключится к серверу: {error}") from error
+
+        except httpx.TimeoutException as error:
+            raise httpx.TimeoutException(f"Таймаут на подключение истек: {error}") from error
 
 async def get_post_response() -> dict[str, str | int]:
     user_data: Dict[str, str] = get_user_config()
