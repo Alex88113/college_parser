@@ -41,14 +41,14 @@ class ValidGetResponse:
     @staticmethod
     def _formater_schedule(valid_schedule: List[Dict]) -> str:
         """Форматирует расписание для вывода"""
-        lines = ['======================== РАСПИСАНИЕ НА СЕГОДНЯ =======================']
+        lines = ['\n']
         today = ValidGetResponse._formater_date_today()
 
-        for data in valid_schedule:  # 👈 используем valid_schedule
-            if data.get('date') == today:  # 👈 исправлено: data.get()
-                lines.append(f"Пара: {data.get('subject_name')} | Преподаватель: {data.get('teacher_name')}")
-                lines.append(f"Начало {data.get('started_at')} | Конец {data.get('finished_at')}")
-                lines.append(f"Аудитория: {data.get('room_name')}")
+        for data in valid_schedule:
+            if data.get('date') == '2026-06-11':
+                lines.append(f"📚Пара: {data.get('subject_name')} |👨‍🏫 Преподаватель: {data.get('teacher_name')}")
+                lines.append(f"🕐Начало {data.get('started_at')} | 🏁 Конец {data.get('finished_at')}")
+                lines.append(f"🏛️Аудитория: {data.get('room_name')}")
                 lines.append("----------------------------------------------------------------------")
 
         return "\n".join(lines)
@@ -65,11 +65,5 @@ async def get_schedule_today() -> str:
     """Получает расписание на сегодня"""
     parsing_data: List[Dict[str, str | int]] = await get_parsing_data()
     valid_obj: ValidGetResponse = ValidGetResponse(parsing_data)
-    result = valid_obj.get_ready_schedule()  # 👈 один вызов
-
-    print(f"Get a schedule: \n{result}")
+    result = valid_obj.get_ready_schedule()
     return result
-
-
-if __name__ == "__main__":
-    asyncio.run(get_schedule_today())
