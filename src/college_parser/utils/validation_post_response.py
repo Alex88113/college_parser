@@ -5,17 +5,10 @@ from src.college_parser.services.auth_services import get_post_response
 
 class ValidPostResponse:
     def __init__(self, post_response: dict[str, str | int]) -> None:
-        if not isinstance(post_response, dict):
-            raise ValueError(f"""
-            Переданный объект post request некорректен.
-            Тип переданного объекта: {type(post_response)}""")
-
-        if post_response == {}:
-            raise ValueError("словарь ответа post запроса пуст")
-
         self.post_response = post_response
         self.valid_post_answer: PostAnswer | None = None
         self.refresh_token: str | None = None
+
 
     def _validation_response(self) -> PostAnswer:
         try:
@@ -35,6 +28,9 @@ class ValidPostResponse:
 
 async def get_refresh_token() -> str:
     post_data = await get_post_response()
-    valid_post = ValidPostResponse(post_data)
-    result_valid: str = valid_post.get_valid_refresh_token()
-    return result_valid
+    try:
+        valid_post = ValidPostResponse(post_data)
+        result_valid: str = valid_post.get_valid_refresh_token()
+        return result_valid
+    except ValueError as error:
+        raise ValueError(f"Проблемы с переданным refresh token: {error}") from error

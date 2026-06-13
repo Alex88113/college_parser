@@ -4,14 +4,15 @@ from typing import Dict
 from src.college_parser.utils.validation_post_response import get_refresh_token
 
 class HeadersGet:
-    async def _get_token(self) -> str:
+    @staticmethod
+    async def _get_token() -> str:
         refresh_token = await get_refresh_token()
         return refresh_token
 
     """Возвращает заголовки, имитирующие запрос из браузера."""
-
-    async def get_headers(self) -> dict[str, str]:
-        token = await self._get_token()
+    @staticmethod
+    async def get_headers() -> dict[str, str]:
+        token = await HeadersGet._get_token()
         return {
             "accept": "application/json, text/plain, */*",
             "accept-encoding": "gzip, deflate, br, zstd",

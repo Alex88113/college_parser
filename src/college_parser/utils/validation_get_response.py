@@ -63,6 +63,9 @@ class ValidGetResponse:
 async def get_schedule_today() -> str:
     """Получает расписание на сегодня"""
     parsing_data: List[Dict[str, str | int]] = await get_parsing_data()
-    valid_obj: ValidGetResponse = ValidGetResponse(parsing_data)
-    result = valid_obj.get_ready_schedule()
-    return result
+    try:
+        valid_obj: ValidGetResponse = ValidGetResponse(parsing_data)
+        result = valid_obj.get_ready_schedule()
+        return result
+    except ValueError as error:
+        raise ValueError(f"Некорректно переданный аргумент: {error}") from error
