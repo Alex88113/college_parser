@@ -1,14 +1,7 @@
-import asyncio
-
-from src.college_parser.routers.schedule import (
-    app,
-    root,
-    get_schedule
-)
+from src.college_parser.routers.schedule import app
 
 if __name__ == "__main__":
     import uvicorn
-
     uvicorn.run(
         "main:app",
         host="127.0.0.1",
