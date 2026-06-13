@@ -3,7 +3,8 @@ import os
 import pytest
 from dotenv import load_dotenv
 
-from src.college_parser.configs.db_config import config_db, DBSettings
+
+from src.college_parser.configs.db_config import config_db
 
 load_dotenv()
 

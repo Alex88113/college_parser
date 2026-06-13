@@ -18,4 +18,4 @@ class DBSettings(BaseSettings):
     )
 
 
-config_db = DBSettings().model_dump()
+config_db = DBSettings()

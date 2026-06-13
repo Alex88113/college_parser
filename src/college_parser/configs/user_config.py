@@ -18,7 +18,6 @@ class UserSettings(BaseSettings):
         case_sensitive=True
     )
 
-
 def get_user_config() -> Dict[str, str]:
     config_user = UserSettings()
     return {

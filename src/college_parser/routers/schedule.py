@@ -1,6 +1,8 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse
+
 from datetime import datetime
+
 from src.college_parser.utils.validation_get_response import get_schedule_today
 
 app = FastAPI(
@@ -449,14 +451,3 @@ async def get_schedule():
     """
 
     return html_content
-
-
-if __name__ == "__main__":
-    import uvicorn
-
-    uvicorn.run(
-        "schedule:app",
-        host="127.0.0.1",
-        port=8000,
-        reload=True
-    )

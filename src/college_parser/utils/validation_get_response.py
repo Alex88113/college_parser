@@ -15,7 +15,7 @@ class ValidGetResponse:
     def __init__(self, parsing_data: List[Dict[str, str | int]]) -> None:
         if not isinstance(parsing_data, list):
             raise ValueError("Требуется список с данными")
-        if not parsing_data:  # 👈 исправлено: проверка на пустоту
+        if not parsing_data:
             raise ValueError("Список с данными пуст")
 
         self.parsing_data = parsing_data
@@ -55,7 +55,6 @@ class ValidGetResponse:
 
     def get_ready_schedule(self) -> str:
         """Главный метод для получения готового расписания"""
-        # Валидируем данные
         valid_data = self._validation_parsing_data(self.parsing_data)
         # Форматируем и возвращаем
         return self._formater_schedule(valid_data)
