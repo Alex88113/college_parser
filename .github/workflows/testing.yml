@@ -40,3 +40,4 @@ jobs:
       - name: Started Tests
         run: | 
               pytest tests/ -v
+              pytest tests/test_services/mock_test/auth_mock.py -v
