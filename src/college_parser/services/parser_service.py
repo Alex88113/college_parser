@@ -3,7 +3,7 @@ import asyncio
 
 import httpx
 
-from src.college_parser.headers.headers_get import get_headers_request
+from src.college_parser.headers.get_headers import get_headers_request
 from src.college_parser.configs.user_config import config_user
 
 class Parsing:
