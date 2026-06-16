@@ -34,16 +34,7 @@ jobs:
           uv pip install --system -r requirements-testing.txt
 
       - name: Create .env from secret
-        run: |
-          if [ -z "${{ secrets.SECRETS_TESTING }}" ]; then
-            echo "❌ SECRETS_TESTING is empty!"
-            exit 1
-          fi
-          echo "${{ secrets.SECRETS_TESTING }}" > .env
-          echo "✅ .env created successfully"
-
-      - name: Debug .env (remove after testing)
-        run: cat .env
+        run: echo "${{ secrets.SECRETS_FOR_TESTING }}" > .env
 
       - name: Run tests
         run: pytest tests/ -v
