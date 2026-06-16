@@ -4,4 +4,5 @@ httpx
 aiogram
 pydantic-settings
 fastapi
+asyncpg
 
