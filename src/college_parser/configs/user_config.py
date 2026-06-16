@@ -18,15 +18,14 @@ class UserSettings(BaseSettings):
         case_sensitive=True
     )
 
+config_user = UserSettings()
 
 def get_user_config() -> Dict[str, str]:
-    config_user = UserSettings()
     return {
         'username': config_user.JOURNAL_NAME,
         'password': config_user.JOURNAL_PASSWORD,
         'application_key': config_user.APP_KEY
     }
 
-config_user = UserSettings()
 
 

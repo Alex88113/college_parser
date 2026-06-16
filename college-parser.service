@@ -1,0 +1,14 @@
+[Unit]
+Description=College Parser Web Service
+After=network.target
+
+[Service]
+Type=simple
+User=shurik
+WorkingDirectory=/home/shurik/college_parser
+Environment="PATH=/home/shurik/.local/bin:/usr/local/bin:/usr/bin:/bin"
+ExecStart=/home/shurik/.local/bin/uv run python /home/shurik/college_parser/main.py
+Restart=on-failure
+RestartSec=10
+StandardOutPut=journal
+StandardError=journal

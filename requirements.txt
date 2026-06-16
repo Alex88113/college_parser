@@ -3,3 +3,5 @@ loguru
 httpx
 aiogram
 pydantic-settings
+fastapi
+

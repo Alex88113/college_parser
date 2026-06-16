@@ -1,51 +1,36 @@
-import asyncio
-from typing import Dict, Any
-
 from pydantic import ValidationError
-from loguru import logger
 
-logger.debug("Начало импорта модуля авторизации....")
+from src.college_parser.models.post_response import PostAnswer
+from src.college_parser.services.auth_services import get_post_response
 
-try:
-    from src.journal_project.models.post_response import PostAnswer
-    from src.journal_project.services.auth_service import get_post_response
-    logger.success("Импорт прошел успешно!")
+class ValidPostResponse:
+    def __init__(self, post_response: dict[str, str | int]) -> None:
+        self.post_response = post_response
+        self.valid_post_answer: PostAnswer | None = None
+        self.refresh_token: str | None = None
 
-except ModuleNotFoundError as error:
-    logger.error("Модуль с таким именем не найден.\nПричина: {error}", error=error)
-    raise
 
-except ImportError as error:
-    logger.error("При импорте пользовательского конфига возникла ошибка: {error}", error=error)
-    raise
-
-class ValidPostAnswer:
-    def __init__(self, data: Dict[str, Any]) -> None:
-        if not isinstance(data, dict) or data == {}:
-            raise ValueError("Переданный объект либо не является json либо он пуст")
-
-        self.data = data
-
-    async def validation_post_answer(self) -> str | None:
+    def _validation_response(self) -> PostAnswer:
         try:
-            valid_data = PostAnswer(**self.data)
-
+            valid_data: PostAnswer = PostAnswer(**self.post_response)
+            self.valid_post_answer = valid_data
+            self.refresh_token = valid_data.refresh_token
+            return self.valid_post_answer
         except ValidationError as error:
-            raise ValidationError(f'Невалидные данные: {error}') from error
+            raise ValidationError(f'Возникла ошибка при валидации пост ответ: {error}') from error
 
-        return valid_data.refresh_token
+    def get_valid_refresh_token(self) -> str:
+        self._validation_response()
+        if self.refresh_token is None:
+            raise ValueError("Токен не прошел валидацию")
+        else:
+            return self.refresh_token
 
-async def get_valid_token() -> str:
+async def get_refresh_token() -> str:
+    post_data = await get_post_response()
     try:
-        post_answer = await get_post_response()
-        valid_obj = ValidPostAnswer(post_answer)
-        result = await valid_obj.validation_post_answer()
-
+        valid_post = ValidPostResponse(post_data)
+        result_valid: str = valid_post.get_valid_refresh_token()
+        return result_valid
     except ValueError as error:
-        logger.error("Некорректно переданные данные для валидации: {error}", error=error)
-        raise
-    except Exception as error:
-        logger.error("Возникла непредвиденная ошибка: {error}", error=error)
-        raise
-
-    return result
+        raise ValueError(f"Проблемы с переданным refresh token: {error}") from error
