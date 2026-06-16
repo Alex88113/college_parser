@@ -5,7 +5,6 @@ from datetime import datetime
 
 from src.college_parser.services.today_schedule_service import get_schedule_today
 
-# 👇 Только роутер, БЕЗ app
 router = APIRouter(
     prefix="/schedule",
     tags=["Today Schedule"]
