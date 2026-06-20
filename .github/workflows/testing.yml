@@ -39,6 +39,7 @@ jobs:
       - name: Run tests
         run: pytest tests/ -v
 
+# deployment io at wsl
   deploy:
     name: Deploy to WSL
     needs: test
