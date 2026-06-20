@@ -52,7 +52,7 @@ jobs:
       - name: Deploy project
         run: |
           echo "🚀 Started deployment to WSL..."
-          cd /home/shurik/projects/college_parser
+          cd /users/shurik/projects/college_parser
           git pull origin master
           
           # Останавливаем старые контейнеры (если есть)
