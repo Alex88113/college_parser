@@ -101,7 +101,7 @@ jobs:
             docker stop college_parser 2>/dev/null || echo "No running container"
             docker rm college_parser 2>/dev/null || echo "No container to remove"
             docker build -t college_parser .
-            docker run -d -p 8000:8000 --name college_parser --restart unless-stopped college_parser
+            docker run -d -p 8001:8001 --name college_parser --restart unless-stopped college_parser
           fi
           
           echo "✅ Deployment completed!"
