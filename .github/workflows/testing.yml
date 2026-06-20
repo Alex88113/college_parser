@@ -8,12 +8,11 @@ on:
 
 jobs:
   test:
-    name: Ru tests
+    name: Run tests
     runs-on: ubuntu-latest
     strategy:
       matrix:
-         python-version: ['3.12.10']
-
+        python-version: ['3.12.10']
 
     steps:
       - name: Checkout code
@@ -35,9 +34,33 @@ jobs:
           uv pip install --system -r requirements-testing.txt
 
       - name: Create .env from secret
-        run: echo "${{ secrets.SECRETS_FOR_TESTING }}" > .env
+        run: echo "${{ secrets.SECRETS_TESTING }}" > .env
 
-      - name: Started Tests
-        run: | 
-              pytest tests/ -v
-              pytest tests/test_services/mock_test/auth_mock.py -v
+      - name: Run tests
+        run: pytest tests/ -v
+
+  deploy:
+    name: Deploy to WSL
+    needs: test
+    runs-on: self-hosted
+    if: github.ref == 'refs/heads/master'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy project
+        run: |
+          echo "🚀 Started deployment to WSL..."
+          cd /home/shurik/projects/college_parser
+          git pull origin master
+          
+          # Останавливаем старые контейнеры (если есть)
+          echo "🛑 Stopping old containers..."
+          docker compose down 2>/dev/null || echo "No running containers"
+          
+          # Пересобираем и запускаем
+          echo "🐳 Building and starting containers..."
+          docker compose up -d --build
+          
+          echo "✅ Deployment completed!"
+          docker ps
