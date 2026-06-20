@@ -40,32 +40,59 @@ jobs:
         run: pytest tests/ -v
 
   deploy:
-    - name: Deploy project
-      run: |
-        echo "🚀 Started deployment to WSL..."
-        cd /home/shurik/projects/college_parser
+    name: Deploy to WSL
+    needs: test
+    runs-on: self-hosted
+    if: github.ref == 'refs/heads/master'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-        # Проверяем, что папка существует
-        if [ ! -d "/home/shurik/projects/college_parser" ]; then
-          echo "❌ Папка не найдена!"
-          exit 1
-        fi
-
-        echo "📂 Current directory: $(pwd)"
-        echo "📦 Stashing local changes..."
-        git stash push --include-untracked -m "Auto-stash before deploy"
-
-        echo "📦 Pulling latest changes..."
-        git pull origin master
-
-        echo "📦 Applying stashed changes..."
-        git stash pop || echo "No stashed changes to apply"
-
-        echo "🐳 Stopping old containers..."
-        docker compose down 2>/dev/null || echo "No running containers"
-
-        echo "🐳 Building and starting containers..."
-        docker compose up -d --build
-
-        echo "✅ Deployment completed!"
-        docker ps
+      - name: Deploy project
+        run: |
+          echo "🚀 Started deployment to WSL..."
+          
+          # ПУТЬ К ТВОЕМУ ПРОЕКТУ
+          PROJECT_PATH="/home/shurik/college_parser"
+          
+          echo "📂 Project path: $PROJECT_PATH"
+          
+          # Проверяем, что папка существует
+          if [ ! -d "$PROJECT_PATH" ]; then
+            echo "❌ Папка $PROJECT_PATH не найдена!"
+            echo "📂 Клонирую репозиторий..."
+            git clone https://github.com/Alex88113/college_parser.git "$PROJECT_PATH"
+          fi
+          
+          cd "$PROJECT_PATH"
+          echo "📂 Current directory: $(pwd)"
+          
+          # Сохраняем локальные изменения перед pull
+          echo "📦 Stashing local changes..."
+          git stash push --include-untracked -m "Auto-stash before deploy" 2>/dev/null || echo "Nothing to stash"
+          
+          # Стягиваем последние изменения
+          echo "📦 Pulling latest changes from master..."
+          git pull origin master
+          
+          # Восстанавливаем изменения (если были)
+          echo "📦 Applying stashed changes..."
+          git stash pop 2>/dev/null || echo "No stashed changes to apply"
+          
+          # Проверяем наличие docker-compose.yml
+          if [ -f "docker-compose.yml" ]; then
+            echo "🐳 Found docker-compose.yml, using Docker Compose..."
+            docker compose down 2>/dev/null || echo "No running containers"
+            docker compose up -d --build
+          else
+            echo "🐳 No docker-compose.yml, using Dockerfile..."
+            docker stop college_parser 2>/dev/null || echo "No running container"
+            docker rm college_parser 2>/dev/null || echo "No container to remove"
+            docker build -t college_parser .
+            docker run -d -p 8000:8000 --name college_parser --restart unless-stopped college_parser
+          fi
+          
+          echo "✅ Deployment completed!"
+          echo "📊 Running containers:"
+          docker ps
