@@ -105,4 +105,4 @@ jobs:
           fi
           
           echo "✅ Deployment completed!"
-          docker ps
+          docker ps -a
