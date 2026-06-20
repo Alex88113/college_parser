@@ -10,4 +10,4 @@ COPY . .
 
 EXPOSE 8080
 
-CMD ["uvicorn", "src.college_parser.main:router", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["uvicorn", "src.college_parser.main:router", "--host", "0.0.0.0", "--port", "8001"]
