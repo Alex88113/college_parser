@@ -44,7 +44,7 @@ jobs:
     needs: test
     runs-on: self-hosted
     if: github.ref == 'refs/heads/master'
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -52,24 +52,24 @@ jobs:
       - name: Deploy project
         run: |
           echo "🚀 Started deployment to WSL..."
-          
+
           PROJECT_PATH="/home/shurik/college_parser"
-          
+
           if [ ! -d "$PROJECT_PATH" ]; then
             echo "❌ Папка $PROJECT_PATH не найдена!"
             git clone https://github.com/Alex88113/college_parser.git "$PROJECT_PATH"
           fi
-          
+
           cd "$PROJECT_PATH"
           echo "📂 Current directory: $(pwd)"
-          
+
           # Проверяем, что Dockerfile не пустой
           if [ ! -s "Dockerfile" ]; then
             echo "❌ Dockerfile пустой или не существует!"
             echo "📝 Создаю Dockerfile..."
             cat > Dockerfile << 'EOF'
           FROM python:3.12.10
-          
+
           WORKDIR /app
           
           COPY requirements.txt .
@@ -106,3 +106,34 @@ jobs:
           
           echo "✅ Deployment completed!"
           docker ps -a
+
+    - name: Deploy project
+      run: |
+        echo "🚀 Started deployment to WSL..."
+        cd /home/shurik/projects/college_parser
+
+        # Проверяем, что папка существует
+        if [ ! -d "/home/shurik/projects/college_parser" ]; then
+          echo "❌ Папка не найдена!"
+          exit 1
+        fi
+
+        echo "📂 Current directory: $(pwd)"
+        echo "📦 Stashing local changes..."
+        git stash push --include-untracked -m "Auto-stash before deploy"
+
+        echo "📦 Pulling latest changes..."
+        git pull origin master
+
+        echo "📦 Applying stashed changes..."
+        git stash pop || echo "No stashed changes to apply"
+
+        echo "🐳 Stopping old containers..."
+        docker compose down 2>/dev/null || echo "No running containers"
+
+        echo "🐳 Building and starting containers..."
+        docker compose up -d --build
+
+        echo "✅ Deployment completed!"
+        docker ps
+

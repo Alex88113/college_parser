@@ -7,7 +7,7 @@ Type=simple
 User=shurik
 WorkingDirectory=/home/shurik/college_parser
 Environment="PATH=/home/shurik/.local/bin:/usr/local/bin:/usr/bin:/bin"
-ExecStart=/home/shurik/.local/bin/uv run python /home/shurik/college_parser/main.py
+ExecStart=/home/shurik/.local/bin/uv run python /home/shurik/college_parser/run.py
 Restart=on-failure
 RestartSec=10
 StandardOutPut=journal
