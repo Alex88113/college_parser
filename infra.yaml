@@ -1,0 +1,22 @@
+services:
+  postgresql:
+    image: postgres:16-alpine
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: ${PSQL_NAME}
+      POSTGRES_PASSWORD: ${PSQL_PASSWORD}
+      POSTGRES_DB: ${COLLEGE_DATABASE}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "${PSQL_PORT}:5432"
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${PSQL_NAME} -d ${COLLEGE_DATABASE}']
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
