@@ -8,16 +8,6 @@ RUN pip install --no-cache-dir uvicorn[standard]
 
 COPY . .
 
-EXPOSE 8080
+EXPOSE 8000
 
-CMD ["uvicorn", "src.college_parser.main:router", "--host", "0.0.0.0", "--port", "8001"]
-WORKDIR app/
-
-COPY requirements.txt .
-
-RUN pip install -r requirements.txt
-
-COPY . .
-
-CMD ["uvicorn", "run:router", "--host", "0.0.0.0", "--port", "8080"]
-
+CMD ["uvicorn", "src.college_parser.main:app", "--host", "0.0.0.0", "--port", "8000"]

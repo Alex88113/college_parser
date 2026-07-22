@@ -1,0 +1,48 @@
+# Виртуальные окружения
+venv/
+.venv/
+env/
+.env
+
+# Системные файлы
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Git и IDE
+.git/
+.gitignore
+.vscode/
+.idea/
+*.iml
+
+# Логи и временные файлы
+logs/
+*.log
+tmp/
+temp/
+
+# Данные и бекапы
+backups/
+*.sql
+*.dump
+postgres-data/
+redis-data/
+
+# Тесты и документация
+tests/
+docs/
+*.md
+!README.md
+
+# Docker и CI
+Dockerfile
+docker-compose*.yaml
+.dockerignore
+.github/
+
+# Прочее
+*.db
+*.sqlite3
+.DS_Store
