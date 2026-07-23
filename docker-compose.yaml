@@ -92,6 +92,7 @@ volumes:
   postgres-data:
   grafana_data:
   prometheus_data:
+  redisdata:
 
 networks:
   app_network:
