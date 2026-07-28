@@ -39,7 +39,6 @@ async def get_tomorrow_schedule() -> str:
         valid_data = await get_valid_schedule()
         tomorrow_service = TomorrowService()
         get_tomorrow = tomorrow_service.get_formatter_schedule_tomorrow(valid_data)
-
         print(get_tomorrow)
         return get_tomorrow
 

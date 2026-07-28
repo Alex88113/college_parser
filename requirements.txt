@@ -6,3 +6,4 @@ pydantic-settings
 fastapi
 asyncpg
 uvicorn[standard]
+prometheus-fastapi-instrumentator

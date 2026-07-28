@@ -1,9 +1,9 @@
-# routers/today_router.py
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import HTMLResponse
 from datetime import datetime
 
 from src.college_parser.services.today_schedule_service import get_schedule_today
+from src.college_parser.configs.groups import GROUPS
 
 router = APIRouter(
     prefix="/schedule",
@@ -12,10 +12,14 @@ router = APIRouter(
 
 
 @router.get("/today", response_class=HTMLResponse)
-async def get_today_schedule_view():
-    """Красивое отображение расписания на сегодня"""
+async def get_today_schedule_view(group: str = "РПО-3"):
+    """Красивое отображение расписания на сегодня для выбранной группы"""
+    if group not in GROUPS:
+        raise HTTPException(status_code=404, detail=f"Группа {group} не найдена")
+
     try:
-        schedule_text = await get_schedule_today()
+        schedule_text = await get_schedule_today(group)
+        current_date = datetime.now().strftime("%d.%m.%Y")
 
         html_content = f"""
         <!DOCTYPE html>
@@ -98,8 +102,8 @@ async def get_today_schedule_view():
                 <div class="card">
                     <div class="header">
                         <h1>🏫 Расписание на сегодня</h1>
-                        <div>Группа РПО-3</div>
-                        <div class="date">📅 {datetime.now().strftime("%d.%m.%Y")}</div>
+                        <div>Группа {group}</div>
+                        <div class="date">📅 {current_date}</div>
                     </div>
                     <div class="schedule-content">{schedule_text}</div>
                     <div class="footer">⏰ Актуально на сегодня | 🔄 Обновляется ежедневно</div>

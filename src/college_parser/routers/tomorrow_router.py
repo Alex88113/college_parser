@@ -1,9 +1,9 @@
-# routers/tomorrow_router.py
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import HTMLResponse
 from datetime import datetime, timedelta
 
 from src.college_parser.services.tomorrow_schedule_service import get_tomorrow_schedule
+from src.college_parser.configs.groups import GROUPS
 
 router = APIRouter(
     prefix="/schedule",
@@ -12,10 +12,13 @@ router = APIRouter(
 
 
 @router.get("/tomorrow", response_class=HTMLResponse)
-async def get_tomorrow_schedule_view():
-    """Красивое отображение расписания на завтра"""
+async def get_tomorrow_schedule_view(group: str = "РПО-3"):
+    """Красивое отображение расписания на завтра для выбранной группы"""
+    if group not in GROUPS:
+        raise HTTPException(status_code=404, detail=f"Группа {group} не найдена")
+
     try:
-        schedule_text = await get_tomorrow_schedule()
+        schedule_text = await get_tomorrow_schedule(group)
         tomorrow_date = (datetime.now() + timedelta(days=1)).strftime("%d.%m.%Y")
 
         html_content = f"""
@@ -99,7 +102,7 @@ async def get_tomorrow_schedule_view():
                 <div class="card">
                     <div class="header">
                         <h1>🏫 Расписание на завтра</h1>
-                        <div>Группа РПО-3</div>
+                        <div>Группа {group}</div>
                         <div class="date">📅 {tomorrow_date}</div>
                     </div>
                     <div class="schedule-content">{schedule_text}</div>

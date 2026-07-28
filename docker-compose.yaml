@@ -35,6 +35,8 @@ services:
       db:
         condition: service_healthy
         restart: true
+      redis:
+        condition: service_healthy
     develop:
       watch:
         - action: sync+restart

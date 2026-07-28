@@ -1,26 +1,32 @@
-# src/college_parser/main.py
-from fastapi import FastAPI
-from fastapi.responses import HTMLResponse
 from datetime import datetime
 
-from src.college_parser.routers import today_router, tomorrow_router
+from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
+from prometheus_fastapi_instrumentator import Instrumentator
 
+from src.college_parser.routers import today_router, tomorrow_router
+from src.college_parser.configs.groups import GROUPS
 
 app = FastAPI(
     title="IT-COLLEGE Расписание",
-    description="Сервис для получения расписания группы РПО-3",
+    description="Сервис для получения расписания групп РПО-2 и РПО-3",
     version="1.0.0"
 )
 
 app.include_router(today_router)
 app.include_router(tomorrow_router)
 
+Instrumentator().instrument(app).expose(app, endpoint='/metrics')
 
 @app.get("/", response_class=HTMLResponse)
 async def root():
-    """Красивая главная страница"""
+    """Красивая главная страница с выбором группы"""
     current_time = datetime.now().strftime("%H:%M:%S")
     current_date = datetime.now().strftime("%d.%m.%Y")
+
+    options = "\n".join([
+        f'<option value="{group}">{group}</option>' for group in GROUPS
+    ])
 
     html_content = f"""
     <!DOCTYPE html>
@@ -93,6 +99,56 @@ async def root():
             .stat-card:hover {{ transform: translateY(-5px); background: rgba(255,255,255,0.25); }}
             .stat-number {{ font-size: 2.5em; font-weight: 800; color: white; display: block; }}
             .stat-label {{ font-size: 0.9em; color: rgba(255,255,255,0.9); margin-top: 5px; }}
+            .group-selector {{
+                background: rgba(255,255,255,0.15);
+                backdrop-filter: blur(10px);
+                padding: 30px;
+                border-radius: 20px;
+                margin-top: 30px;
+                border: 1px solid rgba(255,255,255,0.2);
+            }}
+            .group-selector select {{
+                padding: 12px 20px;
+                border-radius: 12px;
+                border: none;
+                font-size: 1.1em;
+                font-weight: 500;
+                background: white;
+                color: #1e293b;
+                cursor: pointer;
+                outline: none;
+                min-width: 180px;
+                margin-right: 12px;
+            }}
+            .group-selector .btn-group {{
+                display: flex;
+                gap: 12px;
+                flex-wrap: wrap;
+                justify-content: center;
+                margin-top: 15px;
+            }}
+            .group-selector .btn {{
+                padding: 12px 30px;
+                border-radius: 12px;
+                border: none;
+                font-size: 1em;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                text-decoration: none;
+                color: white;
+                background: rgba(255,255,255,0.25);
+            }}
+            .group-selector .btn:hover {{
+                transform: translateY(-3px);
+                background: rgba(255,255,255,0.4);
+            }}
+            .group-selector .btn-today {{
+                background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            }}
+            .group-selector .btn-tomorrow {{
+                background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            }}
             .cards {{
                 display: grid;
                 grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -129,6 +185,7 @@ async def root():
                 .stat-card {{ padding: 15px 20px; }}
                 .stat-number {{ font-size: 1.8em; }}
                 .cards {{ grid-template-columns: 1fr; }}
+                .group-selector select {{ width: 100%; margin-bottom: 10px; }}
             }}
         </style>
     </head>
@@ -136,27 +193,30 @@ async def root():
         <div class="container">
             <div class="hero">
                 <div class="badge">🚀 Добро пожаловать</div>
-                <h1><span class="gradient-text">IT-COLLEGE</span><br>Расписание группы РПО-3</h1>
+                <h1><span class="gradient-text">IT-COLLEGE</span><br>Расписание группы</h1>
                 <p>📱 Удобный сервис для просмотра расписания занятий<br>🔄 Данные обновляются ежедневно</p>
                 <div class="stats">
                     <div class="stat-card"><span class="stat-number">📅</span><span class="stat-label">{current_date}</span></div>
                     <div class="stat-card"><span class="stat-number">🕐</span><span class="stat-label">{current_time}</span></div>
-                    <div class="stat-card"><span class="stat-number">👨‍🎓</span><span class="stat-label">РПО-3</span></div>
+                </div>
+
+                <div class="group-selector">
+                    <form action="/schedule/today" method="get" id="todayForm">
+                        <select name="group" id="groupSelect">
+                            {options}
+                        </select>
+                    </form>
+                    <div class="btn-group">
+                        <button type="submit" form="todayForm" class="btn btn-today">📖 Расписание на сегодня</button>
+                        <button type="submit" form="tomorrowForm" class="btn btn-tomorrow">📅 Расписание на завтра</button>
+                    </div>
+                    <form action="/schedule/tomorrow" method="get" id="tomorrowForm">
+                        <input type="hidden" name="group" id="tomorrowGroupInput">
+                    </form>
                 </div>
             </div>
+
             <div class="cards">
-                <a href="/schedule/today" class="card">
-                    <div class="card-icon">📖</div>
-                    <h3>Расписание на сегодня</h3>
-                    <p>Актуальное расписание занятий группы РПО-3</p>
-                    <span class="arrow">→ Перейти</span>
-                </a>
-                <a href="/schedule/tomorrow" class="card">
-                    <div class="card-icon">📅</div>
-                    <h3>Расписание на завтра</h3>
-                    <p>Завтрашнее расписание занятий группы РПО-3</p>
-                    <span class="arrow">→ Перейти</span>
-                </a>
                 <a href="/docs" class="card">
                     <div class="card-icon">📚</div>
                     <h3>API Документация</h3>
@@ -165,6 +225,21 @@ async def root():
                 </a>
             </div>
         </div>
+
+        <script>
+            const groupSelect = document.getElementById('groupSelect');
+            const tomorrowInput = document.getElementById('tomorrowGroupInput');
+
+            function syncTomorrowGroup() {{
+                tomorrowInput.value = groupSelect.value;
+            }}
+            groupSelect.addEventListener('change', syncTomorrowGroup);
+            syncTomorrowGroup();
+
+            document.querySelector('form[action="/schedule/today"]').addEventListener('submit', function(e) {{
+                console.log('Selected group for today:', groupSelect.value);
+            }});
+        </script>
     </body>
     </html>
     """

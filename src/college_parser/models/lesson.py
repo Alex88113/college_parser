@@ -1,5 +1,4 @@
-from datetime import datetime
-from pydantic import Field, BaseModel, model_validator
+from pydantic import Field, BaseModel
 
 class GetResponse(BaseModel):
     date: str
