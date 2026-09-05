@@ -1,8 +1,9 @@
-from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import Field, HttpUrl
 from dotenv import load_dotenv
+from pydantic import Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 load_dotenv()
+
 
 class DBSettings(BaseSettings):
     PSQL_NAME: str = Field(min_length=4)
@@ -12,9 +13,9 @@ class DBSettings(BaseSettings):
     DATABASE: str = Field(min_length=5)
 
     model_config = SettingsConfigDict(
-        env_file='.env',
-        extra='ignore',
-        case_sensitive=True # ники переменных чувствительных к регистру
+        env_file=".env",
+        extra="ignore",
+        case_sensitive=True,  # ники переменных чувствительных к регистру
     )
 
 

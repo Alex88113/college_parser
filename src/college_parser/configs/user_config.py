@@ -1,9 +1,10 @@
-from typing import Dict
-from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import Field, HttpUrl
+
 from dotenv import load_dotenv
+from pydantic import Field, HttpUrl
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 load_dotenv()
+
 
 class UserSettings(BaseSettings):
     JOURNAL_NAME: str = Field(min_length=5)
@@ -13,19 +14,18 @@ class UserSettings(BaseSettings):
     BASE_URL: HttpUrl
 
     model_config = SettingsConfigDict(
-        env_file='.env',
-        extra='ignore', # игнорировать лишние переменные в .env
-        case_sensitive=True
+        env_file=".env",
+        extra="ignore",  # игнорировать лишние переменные в .env
+        case_sensitive=True,
     )
+
 
 config_user = UserSettings()
 
-def get_user_config() -> Dict[str, str]:
+
+def get_user_config() -> dict[str, str]:
     return {
-        'username': config_user.JOURNAL_NAME,
-        'password': config_user.JOURNAL_PASSWORD,
-        'application_key': config_user.APP_KEY
+        "username": config_user.JOURNAL_NAME,
+        "password": config_user.JOURNAL_PASSWORD,
+        "application_key": config_user.APP_KEY,
     }
-
-
-

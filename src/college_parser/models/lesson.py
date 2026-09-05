@@ -1,4 +1,5 @@
-from pydantic import Field, BaseModel
+from pydantic import BaseModel, Field
+
 
 class GetResponse(BaseModel):
     date: str

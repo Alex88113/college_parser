@@ -1,7 +1,6 @@
-import asyncio
-from typing import Dict
 
 from src.college_parser.utils.validation_post_response import get_refresh_token
+
 
 class HeadersGet:
     @staticmethod
@@ -10,6 +9,7 @@ class HeadersGet:
         return refresh_token
 
     """Возвращает заголовки, имитирующие запрос из браузера."""
+
     @staticmethod
     async def get_headers() -> dict[str, str]:
         token = await HeadersGet._get_token()
@@ -26,10 +26,11 @@ class HeadersGet:
             "sec-fetch-dest": "empty",
             "sec-fetch-mode": "cors",
             "sec-fetch-site": "same-site",
-            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 YaBrowser/26.4.0.0 Safari/537.36"
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 YaBrowser/26.4.0.0 Safari/537.36",
         }
 
-async def get_headers_request() -> Dict[str, str]:
+
+async def get_headers_request() -> dict[str, str]:
     headers_get = HeadersGet()
     result = await headers_get.get_headers()
     return result

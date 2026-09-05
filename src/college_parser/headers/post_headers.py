@@ -1,6 +1,6 @@
-from typing import Dict
 
-def get_post_headers() -> Dict[str, str]:
+
+def get_post_headers() -> dict[str, str]:
     """Формирует заголовки, имитирующие браузер."""
     headers = {
         "accept": "application/json, text/plain, */*",

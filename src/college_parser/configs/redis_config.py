@@ -1,7 +1,8 @@
-from pydantic_settings import BaseSettings, SettingsConfigDict
 from dotenv import load_dotenv
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 load_dotenv()
+
 
 class RedisConfig(BaseSettings):
     REDIS_PORT: int
@@ -10,6 +11,7 @@ class RedisConfig(BaseSettings):
     REDIS_USER: str
     REDIS_DB: str
 
-    model_config = SettingsConfigDict(env_file='.env', extra='ignore')
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+
 
 redis_config_settings = RedisConfig()

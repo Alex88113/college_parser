@@ -1,24 +1,18 @@
-from fastapi import APIRouter, HTTPException
-from fastapi.responses import HTMLResponse
 from datetime import datetime, timedelta
 
-from src.college_parser.services.tomorrow_schedule_service import get_tomorrow_schedule
-from src.college_parser.configs.groups import GROUPS
+from fastapi import APIRouter, HTTPException
+from fastapi.responses import HTMLResponse
 
-router = APIRouter(
-    prefix="/schedule",
-    tags=["Tomorrow Schedule"]
-)
+from src.college_parser.services.tomorrow_schedule_service import get_tomorrow_schedule
+
+router = APIRouter(prefix="/schedule", tags=["Tomorrow Schedule"])
 
 
 @router.get("/tomorrow", response_class=HTMLResponse)
-async def get_tomorrow_schedule_view(group: str = "РПО-3"):
-    """Красивое отображение расписания на завтра для выбранной группы"""
-    if group not in GROUPS:
-        raise HTTPException(status_code=404, detail=f"Группа {group} не найдена")
-
+async def get_tomorrow_schedule_view():
+    """Красивое отображение расписания на завтра"""
     try:
-        schedule_text = await get_tomorrow_schedule(group)
+        schedule_text = await get_tomorrow_schedule()
         tomorrow_date = (datetime.now() + timedelta(days=1)).strftime("%d.%m.%Y")
 
         html_content = f"""
@@ -70,13 +64,22 @@ async def get_tomorrow_schedule_view(group: str = "РПО-3"):
                     text-align: center;
                 }}
                 .header h1 {{ font-size: 2em; font-weight: 700; margin-bottom: 8px; }}
+                .header .date {{ font-size: 0.95em; opacity: 0.8; margin-top: 8px; }}
                 .schedule-content {{
                     padding: 35px;
                     font-family: 'JetBrains Mono', monospace;
                     font-size: 14px;
-                    line-height: 1.7;
+                    line-height: 1.8;
                     background: #f8fafc;
                     white-space: pre-wrap;
+                    min-height: 200px;
+                }}
+                .schedule-content .empty {{
+                    color: #94a3b8;
+                    text-align: center;
+                    font-family: 'Inter', sans-serif;
+                    font-size: 1.1em;
+                    padding: 40px 0;
                 }}
                 .footer {{
                     background: #f1f5f9;
@@ -102,10 +105,9 @@ async def get_tomorrow_schedule_view(group: str = "РПО-3"):
                 <div class="card">
                     <div class="header">
                         <h1>🏫 Расписание на завтра</h1>
-                        <div>Группа {group}</div>
                         <div class="date">📅 {tomorrow_date}</div>
                     </div>
-                    <div class="schedule-content">{schedule_text}</div>
+                    <div class="schedule-content">{schedule_text if schedule_text else '<div class="empty">📭 Расписание на завтра отсутствует</div>'}</div>
                     <div class="footer">⏰ Актуально на завтра | 🔄 Обновляется ежедневно</div>
                 </div>
             </div>
@@ -115,5 +117,7 @@ async def get_tomorrow_schedule_view(group: str = "РПО-3"):
 
         return HTMLResponse(content=html_content)
 
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except Exception as error:
+        raise HTTPException(
+            status_code=500, detail=f"Ошибка при получении расписания: {str(error)}"
+        ) from error

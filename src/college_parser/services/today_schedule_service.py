@@ -1,39 +1,36 @@
-import asyncio
 
-from loguru import logger
-
-from src.college_parser.utils.validation_get_response import get_valid_schedule
-from src.college_parser.utils.validation_post_response import get_refresh_token
+from src.college_parser.utils.validation_get_response import get_valid_schedule_default
 
 
-async def get_schedule_today(group: str = "РПО-3") -> str:
-    """Получить расписание на сегодня для группы"""
-    # Получаем токен для авторизации (если нужен)
-    token = await get_refresh_token()
+class TodaySchedule:
+    @staticmethod
+    def _formatted_schedule_today(schedule_data: list[dict[str, str | int]]) -> str:
+        """Форматирует расписание для вывода"""
+        if not schedule_data:
+            return "Расписание отсутствует"
 
-    # Парсим расписание
-    schedule = await get_valid_schedule(group, "today", token)
+        schedule: list[str] = []
+        for data in schedule_data:
+            schedule.append(
+                f"📚Пара: {data.get('subject_name')} |👨‍🏫 Преподаватель: {data.get('teacher_name')}"
+            )
+            schedule.append(
+                f"🕐Начало {data.get('started_at')} | 🏁 Конец {data.get('finished_at')}"
+            )
+            schedule.append(f"🏛️Аудитория: {data.get('room_name')}")
+            schedule.append(
+                "----------------------------------------------------------------------"
+            )
 
-    # Форматируем для вывода в HTML
-    if isinstance(schedule, str):
-        return schedule
-    elif isinstance(schedule, list):
-        if not schedule:
-            return "📭 На сегодня пар нет."
+        return "\n".join(schedule)
 
-        lines = []
-        for lesson in schedule:
-            time = lesson.get("time", "")
-            name = lesson.get("name", "")
-            teacher = lesson.get("teacher", "")
-            room = lesson.get("room", "")
+    @staticmethod
+    def format_schedule(data: list[dict[str, str | int]]) -> str:
+        body = TodaySchedule._formatted_schedule_today(data)
+        return body
 
-            line = f"🕐 {time} | {name}"
-            if teacher:
-                line += f" | 👨‍🏫 {teacher}"
-            if room:
-                line += f" | 📍 {room}"
-            lines.append(line)
-        return "\n".join(lines)
-    else:
-        return "⚠️ Не удалось получить расписание."
+
+async def get_schedule_today() -> str:
+    """Получаем готовое отформатированное расписание на сегодня"""
+    data = await get_valid_schedule_default()
+    return TodaySchedule.format_schedule(data)

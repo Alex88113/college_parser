@@ -6,6 +6,8 @@ services:
       POSTGRES_USER: ${PSQL_NAME}
       POSTGRES_PASSWORD: ${PSQL_PASSWORD}
       POSTGRES_DB: ${COLLEGE_DATABASE}
+    networks:
+      - app_network
     volumes:
       - postgres-data:/var/lib/postgresql/data
     ports:
@@ -45,3 +47,5 @@ services:
         limits:
           cpus: '0.50'
           memory: 500MB
+    networks:
+      - app_network

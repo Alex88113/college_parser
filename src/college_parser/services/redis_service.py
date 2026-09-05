@@ -1,9 +1,10 @@
-from redis.asyncio import Redis
 import redis.asyncio as redis
-from loguru import logger
+from redis.asyncio import Redis
 
 from src.college_parser.configs.redis_config import redis_config_settings
 from src.college_parser.models.redis_settings_shame import redis_settings
+from src.college_parser.utils.logger import logger
+
 
 class RedisService:
     def __init__(self) -> None:
@@ -16,7 +17,7 @@ class RedisService:
         self._host = redis_config_settings.REDIS_HOST
         self._port = redis_config_settings.REDIS_PORT
         self._db = redis_config_settings.REDIS_DB
-        self._password = redis_config_settings.REDIS_PASSWORD,
+        self._password = (redis_config_settings.REDIS_PASSWORD,)
         self._username = redis_config_settings.REDIS_USER
 
         self._redis_client: Redis | None = None
@@ -27,7 +28,7 @@ class RedisService:
                 port=self._port,
                 host=self._host,
                 decode_responses=self._decode_responses,
-                max_connections=self._max_connections
+                max_connections=self._max_connections,
             )
             self._redis_client = redis.Redis(connection_pool=pool)
 
@@ -48,7 +49,7 @@ class RedisService:
         client = await self.create_pool()
         if await client.ping():
             logger.info("Подключение к бд установлено")
-            logger.debug(f'БД работает на порту={self._port}, host={self._host}')
+            logger.debug(f"БД работает на порту={self._port}, host={self._host}")
         else:
             logger.warning("Не удалось подключиться к Redis.")
 
@@ -66,7 +67,7 @@ class RedisService:
         client = await self.get_client()
         if await client.exists(key):
             return await client.get(key)
-        logger.warning('Refresh токена в кэше нет.')
+        logger.warning("Refresh токена в кэше нет.")
         return None
 
     async def get_access_token(self, key: str) -> str | None:
@@ -78,8 +79,6 @@ class RedisService:
     async def exists(self, key: str) -> bool:
         client = await self.get_client()
         if await client.exists(key):
-            ttl_value: int = await client.ttl(key)
-            logger.info(f"Токен есть в кэше.\nВремя жизни TTL: {ttl_value} сек.")
             return True
         else:
             logger.warning("Токена в кэше нет!")

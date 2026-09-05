@@ -1,11 +1,11 @@
-from typing import Dict, List
 
 import httpx
 from httpx import Response
 
-from src.college_parser.services.get_tokens_service import get_tokens
 from src.college_parser.configs.user_config import config_user
-from src.college_parser.utils.logger import *
+from src.college_parser.services.get_tokens_service import get_tokens
+from src.college_parser.utils.logger import logger
+
 
 class ParsingService:
     def __init__(self) -> None:
@@ -26,7 +26,7 @@ class ParsingService:
             "sec-fetch-dest": "empty",
             "sec-fetch-mode": "cors",
             "sec-fetch-site": "same-site",
-            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 YaBrowser/26.4.0.0 Safari/537.36"
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 YaBrowser/26.4.0.0 Safari/537.36",
         }
 
     async def _parsing_schedule(self, token: str) -> Response | None:
@@ -37,28 +37,32 @@ class ParsingService:
                 response.raise_for_status()
             except httpx.HTTPStatusError as error:
                 if error.response.status_code == 401:
-                    logger.error(f"Не удалось пройти авторизацию по эндпоинту: {response.url}."
-                    f"\nПричина: {error.response.text}, {error.response}")
+                    logger.error(
+                        f"Не удалось пройти авторизацию по эндпоинту: {response.url}."
+                        f"\nПричина: {error.response.text}, {error.response}"
+                    )
                     raise
                 elif error.response.status_code == 403:
-                    logger.error(f'Запрашиваемый ресурс по {response.url} не найден.\nПричина: {error}')
+                    logger.error(
+                        f"Запрашиваемый ресурс по {response.url} не найден.\nПричина: {error}"
+                    )
                     raise
             else:
                 return response
 
-    async def get_parsing_data(self, token: str) -> List[Dict[str, str | int]] | None:
+    async def get_parsing_data(self, token: str) -> list[dict[str, str | int]] | None:
         data = await self._parsing_schedule(token)
         if data:
             return data.json()
         return None
 
-async def get_parsing_schedule() -> List[Dict[str, str | int]] | None:
+
+async def get_parsing_schedule() -> list[dict[str, str | int]] | None:
     token = await get_tokens()
-    logger.info(f'Token from cache: {token}')
     parsing = ParsingService()
-    result_parsing = await parsing.get_parsing_data(token['access_token'])
+    result_parsing = await parsing.get_parsing_data(token["access_token"])
     if result_parsing:
         return result_parsing
     else:
         logger.info("Данных нет.")
-        return  None
+        return None

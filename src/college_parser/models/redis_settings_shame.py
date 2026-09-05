@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+
 @dataclass
 class RedisSettings:
     decode_responses: bool = True

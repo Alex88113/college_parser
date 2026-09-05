@@ -1,8 +1,8 @@
 # utils/logger.py
 import sys
 from pathlib import Path
+
 from loguru import logger
-from datetime import datetime
 
 # Создаём папку для логов
 LOG_DIR = Path("logs")
@@ -53,4 +53,3 @@ logger.add(
     rotation="10 MB",
     retention="14 days",
 )
-

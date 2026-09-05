@@ -37,13 +37,6 @@ services:
         restart: true
       redis:
         condition: service_healthy
-    develop:
-      watch:
-        - action: sync+restart
-          path: .
-          target: /code
-        - action: rebuild
-          path: requirements.txt
     networks:
       - app_network
     restart: unless-stopped
@@ -55,6 +48,13 @@ services:
           reservations:
             cpus: '0.25'
             memory: 256M
+    develop:
+      watch:
+        - action: sync+restart
+          path: .
+          target: /code
+        - action: rebuild
+          path: requirements.txt
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
