@@ -38,49 +38,61 @@ GitHub Actions      — CI/CD пайплайны
 
 📁 Структура проекта
 
+```text
 college_parser/
-├── src/college_parser/
-│   ├── main.py                  # Точка входа FastAPI
-│   ├── configs/                 # Конфигурации (Pydantic)
-│   │   ├── user_config.py       # Настройки из .env
-│   │   ├── redis_config.py      # Настройки Redis
-│   │   └── db_config.py         # Настройки PostgreSQL
-│   ├── db/                      # Работа с PostgreSQL
-│   │   ├── crud.py              # CRUD-операции
-│   │   └── init_db.py           # Инициализация БД
-│   ├── headers/                 # Формирование заголовков
-│   │   ├── get_headers.py       # Заголовки для GET
-│   │   └── post_headers.py      # Заголовки для POST
-│   ├── models/                  # Pydantic-модели
-│   │   ├── post_response.py     # Модель ответа API
-│   │   ├── lesson.py            # Модель занятия
-│   │   └── redis_settings_shame.py
-│   ├── routers/                 # FastAPI-роуты
-│   │   ├── today_router.py      # /schedule/today
-│   │   └── tomorrow_router.py   # /schedule/tomorrow
-│   ├── services/                # Бизнес-логика
-│   │   ├── auth_services.py     # Авторизация, обновление токенов
-│   │   ├── redis_service.py     # Работа с Redis
-│   │   ├── parser_service.py    # Парсинг расписания
-│   │   ├── today_schedule_service.py
-│   │   ├── tomorrow_schedule_service.py
-│   │   └── get_tokens_service.py
-│   └── utils/                   # Утилиты
-│       ├── logger.py            # Настройка loguru
-│       ├── validation_post_response.py
-│       └── validation_get_response.py
-├── tests/                       # Тесты (pytest + respx)
-├── Dockerfile                   # Сборка образа FastAPI
-├── docker-compose.yaml          # Оркестрация сервисов
-├── infra.yaml                   # Инфраструктура (PostgreSQL, Redis)
-├── nginx.conf                   # Reverse-proxy
-├── prometheus.yml               # Конфиг мониторинга
-├── redis.conf                   # Конфиг Redis
-├── requirements.txt             # Зависимости
-├── requirements-dev.txt         # Зависимости для разработки
-├── requirements-testing.txt     # Зависимости для тестов
-├── run.py                       # Точка входа для запуска
-└── pyproject.toml               # Метаданные проекта
+│
+├── 📂 src/college_parser/
+│   ├── 🐍 main.py                          # Точка входа FastAPI
+│   │
+│   ├── 📂 configs/                         # Конфигурации (Pydantic)
+│   │   ├── user_config.py                  # Настройки из .env
+│   │   ├── redis_config.py                 # Настройки Redis
+│   │   └── db_config.py                    # Настройки PostgreSQL
+│   │
+│   ├── 📂 db/                              # Работа с PostgreSQL
+│   │   ├── crud.py                         # CRUD-операции
+│   │   └── init_db.py                      # Инициализация БД
+│   │
+│   ├── 📂 headers/                         # Формирование заголовков
+│   │   ├── get_headers.py                  # Заголовки для GET
+│   │   └── post_headers.py                 # Заголовки для POST
+│   │
+│   ├── 📂 models/                          # Pydantic-модели
+│   │   ├── post_response.py                # Модель ответа API
+│   │   ├── lesson.py                       # Модель занятия
+│   │   └── redis_settings_shame.py         # Настройки Redis
+│   │
+│   ├── 📂 routers/                         # FastAPI-роуты
+│   │   ├── today_router.py                 # /schedule/today
+│   │   └── tomorrow_router.py              # /schedule/tomorrow
+│   │
+│   ├── 📂 services/                        # Бизнес-логика
+│   │   ├── auth_services.py                # Авторизация, обновление токенов
+│   │   ├── redis_service.py                # Работа с Redis
+│   │   ├── parser_service.py               # Парсинг расписания
+│   │   ├── today_schedule_service.py       # Расписание на сегодня
+│   │   ├── tomorrow_schedule_service.py    # Расписание на завтра
+│   │   └── get_tokens_service.py           # Получение токенов
+│   │
+│   └── 📂 utils/                           # Утилиты
+│       ├── logger.py                       # Настройка loguru
+│       ├── validation_post_response.py     # Валидация POST-ответа
+│       └── validation_get_response.py      # Валидация GET-ответа
+│
+├── 📂 tests/                               # Тесты (pytest + respx)
+│
+├── 🐳 Dockerfile                           # Сборка образа FastAPI
+├── 🐳 docker-compose.yaml                  # Оркестрация сервисов
+├── 🐳 infra.yaml                           # Инфраструктура (PostgreSQL, Redis)
+├── 🌐 nginx.conf                           # Обратный прокси
+├── 📊 prometheus.yml                       # Конфиг мониторинга
+├── ⚙️ redis.conf                           # Конфиг Redis
+├── 📦 requirements.txt                     # Зависимости
+├── 📦 requirements-dev.txt                 # Зависимости для разработки
+├── 📦 requirements-testing.txt             # Зависимости для тестов
+├── 🚀 run.py                               # Точка входа для запуска
+└── 📝 pyproject.toml                       # Метаданные проекта
+```
 
 ⚙️ Установка и запуск
 Требования
