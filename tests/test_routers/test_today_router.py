@@ -1,13 +1,18 @@
+import importlib
+
 import pytest
 from httpx import ASGITransport, AsyncClient
 
 from src.college_parser.main import app
-from src.college_parser.routers import today_router as today_router_module
 
 
 @pytest.mark.asyncio
 async def test_today_schedule_router(monkeypatch):
     """Тест роутера /schedule/today с замоканным сервисом."""
+
+    today_router_module = importlib.import_module(
+        "src.college_parser.routers.today_router"
+    )
 
     async def fake_get_schedule_today() -> str:
         return "Расписание на сегодня\nПара: Тестовая"
