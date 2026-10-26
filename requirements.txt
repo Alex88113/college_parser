@@ -1,5 +1,6 @@
 pydantic
 loguru
+httpx[http2]
 httpx
 aiogram
 pydantic-settings
