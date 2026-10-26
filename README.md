@@ -73,7 +73,7 @@
 
 ## 📁 Структура проекта
 
-```text
+```
 college_parser/
 │
 ├── 📂 src/college_parser/
@@ -131,25 +131,21 @@ college_parser/
 ⚙️ Установка и запуск
 ✅ Требования
 ☑ Docker и Docker Compose
-
 ☑ WSL2 (если Windows)
-
 ☑ Python 3.12 (для локальной разработки)
 
 1. Клонировать репозиторий
-bash
 git clone https://github.com/Alex88113/college_parser.git
 cd college_parser
+
 2. Создать .env
 Скопируй .env.example в .env и заполни своими данными:
-
-bash
 cp .env.example .env
+
 3. Запустить проект
-bash
 docker compose up -d --build
+
 4. Проверить статус
-bash
 docker compose ps
 Все контейнеры должны быть в статусе Up.
 
@@ -162,7 +158,6 @@ docker compose ps
 /metrics	GET	Метрики для Prometheus
 Примеры запросов:
 
-bash
 # Главная страница
 curl http://localhost:8000/
 
@@ -185,32 +180,22 @@ grafana	grafana/grafana	3000	Визуализация
 Сеть: все сервисы объединены в app_network (bridge). Контейнеры обращаются друг к другу по именам сервисов.
 
 Volumes:
-
 postgres-data — данные PostgreSQL.
-
 redis-data — данные Redis.
-
 grafana_data — дашборды Grafana.
-
 prometheus_data — метрики Prometheus.
 
 📊 Мониторинг
 Prometheus: http://localhost:9090
-
 Grafana: http://localhost:3000 (логин/пароль: admin/admin)
 
 Метрики:
-
 http_requests_total — количество запросов.
-
 http_request_duration_seconds — время ответа.
-
 process_cpu_seconds_total — нагрузка на процессор.
-
 process_resident_memory_bytes — потребление памяти.
 
 🧪 Тестирование
-bash
 # Установить зависимости для тестов
 pip install -r requirements-testing.txt
 
@@ -221,7 +206,6 @@ pytest
 pytest --cov=src
 Структура тестов:
 
-text
 tests/
 ├── test_configs/       # Тесты конфигов
 ├── test_routers/       # Тесты роутов
@@ -237,8 +221,8 @@ Redis не подключается	Проверить REDIS_HOST=redis в .env
 Токены не обновляются	docker compose exec redis redis-cli ttl access_token
 Nginx отдаёт 502	docker compose logs nginx
 Контейнер падает	docker compose logs web --tail 50
+
 📋 Полезные команды
-bash
 # Логи всех сервисов
 docker compose logs -f
 
