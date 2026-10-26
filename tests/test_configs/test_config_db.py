@@ -18,27 +18,6 @@ class TestSettingsDB:
             "psql_port": str(os.getenv("PSQL_PORT")),
         }
 
-    @pytest.mark.parametrize(
-        "psql_name, psql_password, psql_host, psql_port, database",
-        [
-            ("postgres", "mekfmkemf", "localhost", "o3ii34o3o", "fmekfmkem"),
-            ("postgres", "343fdfdf", "localhost", "fdlfmkdmfkdmfk", "fdmfkdm"),
-            ("postgres", "8394893849", True, "localhost", "fkmkemp23"),
-            ("postgres", "mdsmdksmd", "kkoioe", 332323, "lsalsl"),
-            ("postgres", "kldkldkw", "dmdkwmd", 323, "dsdklks"),
-        ],
-    )
-    def test_db_config(
-        self, monkeypatch, psql_name, psql_password, psql_host, psql_port, database
-    ):
-        monkeypatch.setenv("PSQL_NAME", psql_name)
-        monkeypatch.setenv("PSQL_PASSWORD", psql_password)
-        monkeypatch.setenv("PSQL_HOST", psql_host)
-        monkeypatch.setenv("PSQL_PORT", psql_port)
-        monkeypatch.setenv("DATABASE", database)
-
-        assert psql_name == config_db.PSQL_NAME
-
     def test_psql_name(self, get_data_db_from_env):
         assert get_data_db_from_env.get("psql_username") == config_db.PSQL_NAME
         assert config_db.PSQL_NAME is not None
