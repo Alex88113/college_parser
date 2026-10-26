@@ -2,7 +2,7 @@ import pytest
 from httpx import ASGITransport, AsyncClient
 
 from src.college_parser.main import app
-from src.college_parser.routers import today_router
+from src.college_parser.routers import today_router as today_router_module
 
 
 @pytest.mark.asyncio
@@ -13,7 +13,7 @@ async def test_today_schedule_router(monkeypatch):
         return "Расписание на сегодня\nПара: Тестовая"
 
     monkeypatch.setattr(
-        today_router,
+        today_router_module,
         "get_schedule_today",
         fake_get_schedule_today,
     )
