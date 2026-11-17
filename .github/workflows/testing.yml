@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.12.10']
+        python-version: ['3.13.15']
 
     steps:
       - name: Checkout code
@@ -38,71 +38,3 @@ jobs:
 
       - name: Run tests
         run: pytest tests/ -v
-
-  deploy:
-    name: Deploy to WSL
-    needs: test
-    runs-on: self-hosted
-    if: github.ref == 'refs/heads/master'
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Deploy project
-        run: |
-          echo "🚀 Started deployment to WSL..."
-
-          PROJECT_PATH="/home/shurik/college_parser"
-
-          if [ ! -d "$PROJECT_PATH" ]; then
-            echo "❌ Папка $PROJECT_PATH не найдена! Клонирую..."
-            git clone https://github.com/Alex88113/college_parser.git "$PROJECT_PATH"
-          fi
-
-          cd "$PROJECT_PATH"
-          echo "📂 Current directory: $(pwd)"
-
-          # Проверяем, что Dockerfile не пустой
-          if [ ! -s "Dockerfile" ]; then
-            echo "❌ Dockerfile пустой или не существует!"
-            echo "📝 Создаю Dockerfile..."
-            cat > Dockerfile << 'EOF'
-          FROM python:3.12.10
-
-          WORKDIR /app
-
-          COPY requirements.txt .
-          RUN pip install --no-cache-dir -r requirements.txt
-
-          COPY . .
-
-          EXPOSE 8000
-
-          CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
-          EOF
-          fi
-
-          echo "📦 Stashing local changes..."
-          git stash push --include-untracked -m "Auto-stash before deploy" 2>/dev/null || echo "Nothing to stash"
-
-          echo "📦 Pulling latest changes from master..."
-          git pull origin master
-
-          echo "📦 Applying stashed changes..."
-          git stash pop 2>/dev/null || echo "No stashed changes to apply"
-
-          if [ -f "docker-compose.yml" ]; then
-            echo "🐳 Using Docker Compose..."
-            docker compose down 2>/dev/null || echo "No running containers"
-            docker compose up -d --build
-          else
-            echo "🐳 Using Dockerfile..."
-            docker stop college_parser 2>/dev/null || echo "No running container"
-            docker rm college_parser 2>/dev/null || echo "No container to remove"
-            docker build -t college_parser .
-            docker run -d -p 8000:8000 --name college_parser --restart unless-stopped college_parser
-          fi
-
-          echo "✅ Deployment completed!"
-          docker ps -a
